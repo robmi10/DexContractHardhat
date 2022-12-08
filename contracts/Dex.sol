@@ -43,7 +43,9 @@ contract Dex is IERC20, LiquidityToken {
         uint256 firstReserveTokenBackToUser = (firstReserve * _amount) / totalSupply;
         uint256 secondReserveBackToUser = (secondSupply * _amount) / totalSupply;
         _burn(msg.sender, _amount);
+        IERC20(_firstReserve).approve(address(this), firstReserveTokenBackToUser);
         IERC20(_firstReserve).transferFrom(address(this), msg.sender, firstReserveTokenBackToUser);
+        IERC20(_secondReserve).approve(address(this), secondReserveBackToUser);
         IERC20(_secondReserve).transferFrom(address(this), msg.sender, secondReserveBackToUser);
         emit liquidityWidthdraw(_amount, msg.sender);
     }
@@ -56,6 +58,7 @@ contract Dex is IERC20, LiquidityToken {
         uint256 fee = (outputAmount * 99) / 100;
         
         require(_amount >= outputAmount, "to little amount for swapping");
+        IERC20(_fromToken).approve(address(this), fee);
         IERC20(_fromToken).transferFrom(msg.sender, address(this), fee);
         IERC20(_toToken).approve(address(this), msg.value);
         IERC20(_toToken).transferFrom(address(this), msg.sender, outputAmount);

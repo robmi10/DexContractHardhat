@@ -1,15 +1,13 @@
-const { ethers } = require("hardhat");
-
 module.exports = async ({}) => {
   const deploy = deployments();
   const { deployer } = await getNamedAccounts();
 
-  const VIVEToken = await deploy("VIVEToken", {
+  const LiquidityToken = await deploy("LiquidityToken", {
     from: deployer,
     args: [],
     log: true,
   });
-  console.log("Deployed vivetoken address at", VIVEToken.address);
+  console.log("Deployed liquiditytoken address at", LiquidityToken.address);
 };
 
-module.exports.tags[("all", "VIVEToken")];
+module.exports.tags[("all", "LiquidityToken")];
