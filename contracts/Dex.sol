@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "./LP.sol";
+import "./LiquidityToken.sol";
 
 contract Dex is IERC20, LiquidityToken {
     LiquidityToken public lpToken;
@@ -10,6 +10,7 @@ contract Dex is IERC20, LiquidityToken {
     event tokenSwap(address indexed fromToken, address indexed toToken, address indexed swapper);
     event liquidityPool( uint256 indexed amount, address indexed provider);
     event liquidityWidthdraw( uint256 indexed _amount, address indexed _to);
+    event addressBalance( uint256 indexed _amount, address indexed _address);
     constructor(address _lpToken) {
         require(_lpToken != address(0));
         lpTokenAddress = _lpToken;
@@ -19,7 +20,7 @@ contract Dex is IERC20, LiquidityToken {
         return IERC20(_token).balanceOf(address(this));
     }
 
-    function addLiquidity (uint _amount, address _firstReserve, address _secondReserve, address _liquidityToken) public {
+    function addLiquidity (uint _amount, address _firstReserve, address _secondReserve, address _liquidityToken) public payable{
         uint256 firstReserve = getReserve(_firstReserve);
         uint256 secondReserve = getReserve(_secondReserve);
         if(firstReserve == 0){
@@ -29,7 +30,7 @@ contract Dex is IERC20, LiquidityToken {
         }else{
         uint256 acceptedLiquidityAmount = (_amount * firstReserve) / secondReserve;
         require(_amount >= acceptedLiquidityAmount, "not accepted liquidity less then the minimum amount accepted");
-        IERC20(_liquidityToken).transferFrom(msg.sender, address(this), acceptedLiquidityAmount);
+        IERC20(_firstReserve).transferFrom(msg.sender, address(this), acceptedLiquidityAmount);
         _mint(msg.sender, acceptedLiquidityAmount);
         emit liquidityPool( _amount, msg.sender);
         }

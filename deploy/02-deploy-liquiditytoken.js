@@ -1,5 +1,5 @@
-module.exports = async ({}) => {
-  const deploy = deployments();
+module.exports = async ({ getNamedAccounts, deployments }) => {
+  const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
   const LiquidityToken = await deploy("LiquidityToken", {
@@ -10,4 +10,4 @@ module.exports = async ({}) => {
   console.log("Deployed liquiditytoken address at", LiquidityToken.address);
 };
 
-module.exports.tags[("all", "LiquidityToken")];
+module.exports.tags = ["all", "LiquidityToken"];

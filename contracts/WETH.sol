@@ -10,7 +10,6 @@ contract WETH is ERC20{
     }
  
     function deposit () public payable{
-        ERC20(address(this)).transfer(msg.sender, msg.value);
         emit depositEvent(msg.value, msg.sender);
         _mint(msg.sender, msg.value);
     }
@@ -21,7 +20,8 @@ contract WETH is ERC20{
         emit transferEvent(call, data);
         emit widthdrawEvent(_amount, msg.sender);
     }
-       fallback () external{
+       fallback () payable external{
         deposit();
     }
+  
 }
