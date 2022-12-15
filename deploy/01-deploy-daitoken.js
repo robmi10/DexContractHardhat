@@ -15,6 +15,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   console.log({ amount });
   const transferDaiToDeployer = await DAItokenSend.transfer(deployer, amount);
   await transferDaiToDeployer.wait(1);
+
+  console.log({ transferDaiToDeployer });
   const DaiTokenBalance = await DAItokenSend.balanceOf(deployer);
   console.log("Deployer DaiToken balance", DaiTokenBalance);
 };
