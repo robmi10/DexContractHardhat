@@ -9,7 +9,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deployer } = await getNamedAccounts();
   [owner, account2] = await ethers.getSigners();
   daiToken = await ethers.getContract("DAI", deployer);
-  liquidityToken = await ethers.getContract("LiquidityToken", deployer);
+  liquidityToken = await ethers.getContract("LIToken", deployer);
   const Dex = await deploy("Dex", {
     from: deployer,
     args: [],

@@ -2,15 +2,15 @@
 pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "./LiquidityToken.sol";
+import "./LIToken.sol";
 
 //Skapa den här kontrakten som en pool istället och den här poolen har alltså sin egna address.
 //Poolen ska därefter kunna kallas från en annan Kontrakt som ska vara själva Dex och ta hand om varje pool som exisiterar.
 //Därför gör om denna kontrakt så att den är kopplad till eth msg.value() istället för "weth" sen skapa den riktiga Dex "manage" kontrakten.
 //I Dex kontraktet spara alla olika pools i en mapping och kalla deras funktioner med hjälp av en 
 
-contract Pool is IERC20, LiquidityToken {
-    LiquidityToken public lpToken;
+contract Pool is IERC20, LIToken {
+    LIToken public lpToken;
 
     fallback() external payable {}
     receive() external payable {}
@@ -29,7 +29,7 @@ contract Pool is IERC20, LiquidityToken {
     constructor(address _erc20TokenAddress) {
         require(_erc20TokenAddress != address(0));
         erc20TokenAddress = _erc20TokenAddress;
-        lpToken = new LiquidityToken();
+        lpToken = new LIToken();
     }
 
     function getReserve() public payable returns(uint256) {

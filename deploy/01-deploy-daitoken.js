@@ -12,13 +12,13 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
   console.log("Deployed daitoken address at", DaiToken.address);
   const DAItokenSend = await ethers.getContract("DAI", deployer);
-  console.log({ amount });
-  const transferDaiToDeployer = await DAItokenSend.transfer(deployer, amount);
-  await transferDaiToDeployer.wait(1);
+  // console.log({ amount });
+  // const transferDaiToDeployer = await DAItokenSend.transfer(deployer, amount);
+  // await transferDaiToDeployer.wait(1);
 
-  console.log({ transferDaiToDeployer });
-  const DaiTokenBalance = await DAItokenSend.balanceOf(deployer);
-  console.log("Deployer DaiToken balance", DaiTokenBalance);
+  // console.log({ transferDaiToDeployer });
+  // const DaiTokenBalance = await DAItokenSend.balanceOf(deployer);
+  // console.log("Deployer DaiToken balance", DaiTokenBalance);
 };
 
 module.exports.tags = ["all", "DaiToken"];

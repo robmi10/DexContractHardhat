@@ -3,7 +3,7 @@ pragma solidity ^0.8.4;
 import "./Pool.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract DexV3 {
+contract Dex {
     Pool public  pool;
     
     event userAddress (address indexed _useraddress);

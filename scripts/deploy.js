@@ -2,12 +2,10 @@ const hre = require("hardhat");
 const { ethers, deployments, network } = require("hardhat");
 
 async function main() {
-  const { deploy } = deployments;
-  const { deployer } = await getNamedAccounts();
   console.log("inside main deploy");
   await deployments.fixture(["all"]);
   daiToken = await ethers.getContract("DAI");
-  liquidityToken = await ethers.getContract("LiquidityToken");
+  liquidityToken = await ethers.getContract("LIToken");
   dex = await ethers.getContract("Dex");
 
   console.log(

@@ -2,7 +2,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  const LiquidityToken = await deploy("LiquidityToken", {
+  const LiquidityToken = await deploy("LIToken", {
     from: deployer,
     args: [],
     log: true,
