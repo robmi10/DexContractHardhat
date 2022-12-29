@@ -36,5 +36,15 @@ module.exports = {
       chainId: 31337,
       allowUnlimitedContractSize: true,
     },
+
+    ganache: {
+      url: "HTTP://127.0.0.1:7545",
+      chainId: 1337,
+      allowUnlimitedContractSize: true,
+      accounts: [
+        "0x9ebab9311d5ba5fbb3d4216e11e4f4b08601bfaece8cfca16e7ee914ca4247ce",
+      ],
+      //9ebab9311d5ba5fbb3d4216e11e4f4b08601bfaece8cfca16e7ee914ca4247ce
+    },
   },
 };

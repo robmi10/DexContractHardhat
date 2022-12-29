@@ -1,4 +1,4 @@
-const { ethers, network } = require("hardhat");
+const { ethers, network, config } = require("hardhat");
 const fs = require("fs");
 var fse = require("fs-extra");
 var path = require("path");
@@ -31,25 +31,25 @@ async function main() {
     });
   }
 
-  async function updateAbi() {
-    await deployments.fixture(["all"]);
-    const daiToken = await ethers.getContract("DAI");
-    const liquidityToken = await ethers.getContract("LIToken");
-    const dex = await ethers.getContract("Dex");
+  // async function updateAbi() {
+  //   await deployments.fixture(["all"]);
+  //   const daiToken = await ethers.getContract("DAI");
+  //   const liquidityToken = await ethers.getContract("LIToken");
+  //   const dex = await ethers.getContract("Dex");
 
-    const currentABI = [
-      { daiToken: daiToken.interface.format(ethers.utils.FormatTypes.json) },
-      {
-        liquidityToken: liquidityToken.interface.format(
-          ethers.utils.FormatTypes.json
-        ),
-      },
-      {
-        dex: dex.interface.format(ethers.utils.FormatTypes.json),
-      },
-    ];
-    fs.writeFileSync(FRONT_END_ABI_FILE, JSON.stringify(currentABI));
-  }
+  //   const currentABI = [
+  //     { daiToken: daiToken.interface.format(ethers.utils.FormatTypes.json) },
+  //     {
+  //       liquidityToken: liquidityToken.interface.format(
+  //         ethers.utils.FormatTypes.json
+  //       ),
+  //     },
+  //     {
+  //       dex: dex.interface.format(ethers.utils.FormatTypes.json),
+  //     },
+  //   ];
+  //   fs.writeFileSync(FRONT_END_ABI_FILE, JSON.stringify(currentABI));
+  // }
 
   async function updateContractAdresses() {
     await deployments.fixture(["all"]);
@@ -58,6 +58,17 @@ async function main() {
     const dex = await ethers.getContract("Dex");
 
     const chainId = network.config.chainId.toString();
+
+    const accounts = config.networks.hardhat.accounts;
+    const index = 0; // first wallet, increment for next wallets
+    const wallet1 = ethers.Wallet.fromMnemonic(
+      accounts.mnemonic,
+      accounts.path + `/${index}`
+    );
+
+    const privateKey1 = wallet1.privateKey;
+
+    console.log({ privateKey1 });
     const currentAddresses = JSON.parse(
       fs.readFileSync(FRONT_END_ADDRESSED_FILE, "utf8")
     );
