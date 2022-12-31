@@ -17,6 +17,10 @@ contract Pool is IERC20, LIToken {
 
     address public erc20TokenAddress;
     mapping(address => uint256) WethMapping;
+
+    mapping(address => uint256) usermap;
+
+
     event tokenSwap(address indexed token, address indexed swapper, string indexed swap, uint256 _amount);
     event liquidityPool( uint256 indexed amount, address indexed provider, uint256 indexed reserve);
     //event liquidityWidthdraw( uint256 indexed _amount, address indexed _to);
@@ -50,8 +54,9 @@ contract Pool is IERC20, LIToken {
     }*/
 
     function addLiquidity (uint _amount, address _sender) public payable returns (address, uint256, uint256, uint256, uint256) {
-        uint256 daiReserve = getReserve();
-        uint256 _ethReserve = address(this).balance - msg.value;
+       uint256 daiReserve = getReserve();
+       uint256 _ethReserve = address(this).balance - msg.value;
+    
         if(daiReserve == 0){
             lpToken.mint(_sender, _amount);
             IERC20(erc20TokenAddress).transferFrom(_sender, address(this), _amount);
@@ -71,6 +76,15 @@ contract Pool is IERC20, LIToken {
         }
        
     }
+
+    function createuSER (uint256 age, string memory name) public view (){
+
+        usermap[i] = msg.sender;
+        emit createUser(_age, _name, msg.sender);
+
+    }
+
+
     // remove liquidity
     function removeLiquidity(uint _amount, address _sender) public payable returns (address, uint256, uint256, uint256, uint256) {
         require(_amount >= 0, "to little amount");  
