@@ -17,18 +17,12 @@ contract Pool is IERC20, LIToken {
 
     address public erc20TokenAddress;
     mapping(address => uint256) WethMapping;
-
-    mapping(address => uint256) usermap;
-
-
     event tokenSwap(address indexed token, address indexed swapper, string indexed swap, uint256 _amount);
     event liquidityPool( uint256 indexed amount, address indexed provider, uint256 indexed reserve);
-    //event liquidityWidthdraw( uint256 indexed _amount, address indexed _to);
-    //event addressBalance(address indexed token, uint256 indexed _amount, address indexed _address);
+
     event balancesCheck(address _from, uint256 indexed totalSupply, uint256 indexed ethBalance, uint256 indexed ethBackToUser, uint256 liquidityBackToUser);
     event balanceCall(uint256 indexed _amount, uint256 indexed _secondamount);
-  //  event userInPoolAddress(address indexed _caller);
-    //event transferSwap(uint256 _amount, bytes data, bool call);
+
 
     constructor(address _erc20TokenAddress) {
         require(_erc20TokenAddress != address(0));
@@ -38,30 +32,16 @@ contract Pool is IERC20, LIToken {
 
     function getReserve() public payable returns(uint256) {
         uint256 balaceGet = IERC20(erc20TokenAddress).balanceOf(address(this));
-       // emit balanceCall(balaceGet);
         return balaceGet;
     }
-    /*function getEthReserve() public payable returns(uint256) {
-        uint256 balaceGet = address(this).balance;
-        emit balanceCall(balaceGet);
-        return address(this).balance;
-    }
-    function getAddress() public payable returns (address){
-        return erc20TokenAddress;
-    }
-    function getLiquidityAddress() public payable returns (address){
-        return address(lpToken);
-    }*/
 
     function addLiquidity (uint _amount, address _sender) public payable returns (address, uint256, uint256, uint256, uint256) {
-       uint256 daiReserve = getReserve();
-       uint256 _ethReserve = address(this).balance - msg.value;
-    
+        uint256 daiReserve = getReserve();
+        uint256 _ethReserve = address(this).balance - msg.value;
         if(daiReserve == 0){
             lpToken.mint(_sender, _amount);
             IERC20(erc20TokenAddress).transferFrom(_sender, address(this), _amount);
-            // emit balancesCheck(_sender, _amount, daiReserve, _ethReserve, msg.value);
-        //    emit liquidityPool( _amount, _sender, 1);
+
            return (_sender, lpToken._totalSupply(), daiReserve, _ethReserve, lpToken._balanceOf(_sender));
         }else{
         uint256 acceptedLiquidityAmount = (msg.value * daiReserve) / (_ethReserve);
@@ -76,15 +56,6 @@ contract Pool is IERC20, LIToken {
         }
        
     }
-
-    function createuSER (uint256 age, string memory name) public view (){
-
-        usermap[i] = msg.sender;
-        emit createUser(_age, _name, msg.sender);
-
-    }
-
-
     // remove liquidity
     function removeLiquidity(uint _amount, address _sender) public payable returns (address, uint256, uint256, uint256, uint256) {
         require(_amount >= 0, "to little amount");  
@@ -95,8 +66,6 @@ contract Pool is IERC20, LIToken {
         IERC20(erc20TokenAddress).approve(address(this), ldtokenBackToUser);
         IERC20(erc20TokenAddress).transferFrom(address(this), _sender, ldtokenBackToUser);
         (bool call, bytes memory data) = _sender.call{value: (ethReserve * _amount) / lpToken._totalSupply()}("");
-       // emit liquidityPool(_amount, _sender, ldtokenBackToUser);
-        // emit balancesCheck (_sender, _amount, ethReserve ,ethBackToUser, ldtokenBackToUser);
         return (_sender, lpToken._totalSupply(), ldtokenBackToUser, (ethReserve * _amount) / lpToken._totalSupply(), tokenBalance);
     }
    
@@ -109,7 +78,6 @@ contract Pool is IERC20, LIToken {
 
         require(ethReserve > 0 && erc20Reserve > 0, "invalide reserve amount");
         uint256 outputAmount = (inputAmountFee * erc20Reserve) / (_amount + fullEthReserve);
-       // emit balancesCheck (ethReserve, _amount ,inputAmountFee, outputAmount);
         emit balanceCall(_amount, outputAmount);
         return outputAmount;
     }
