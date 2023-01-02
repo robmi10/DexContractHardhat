@@ -59,14 +59,13 @@ contract Pool is IERC20, LIToken {
     // remove liquidity
     function removeLiquidity(uint _amount, address _sender) public payable returns (address, uint256, uint256, uint256, uint256) {
         require(_amount >= 0, "to little amount");  
-        uint256 ethReserve = address(this).balance;
-        uint256 ldtokenBackToUser = (IERC20(erc20TokenAddress).balanceOf(address(this)) * _amount) / lpToken._totalSupply();
         uint256 tokenBalance = lpToken._balanceOf(_sender);
         lpToken.burn(_sender, _amount);
-        IERC20(erc20TokenAddress).approve(address(this), ldtokenBackToUser);
-        IERC20(erc20TokenAddress).transferFrom(address(this), _sender, ldtokenBackToUser);
-        (bool call, bytes memory data) = _sender.call{value: (ethReserve * _amount) / lpToken._totalSupply()}("");
-        return (_sender, lpToken._totalSupply(), ldtokenBackToUser, (ethReserve * _amount) / lpToken._totalSupply(), tokenBalance);
+        IERC20(erc20TokenAddress).approve(address(this), (IERC20(erc20TokenAddress).balanceOf(address(this)) * _amount) / lpToken._totalSupply());
+        IERC20(erc20TokenAddress).transferFrom(address(this), _sender, (IERC20(erc20TokenAddress).balanceOf(address(this)) * _amount) / lpToken._totalSupply());
+        uint256 ethBack = address(this).balance * _amount / lpToken._totalSupply();
+        (bool call, bytes memory data) = _sender.call{value: ethBack}("");
+        return (_sender, lpToken._totalSupply(), _amount, address(this).balance, lpToken._balanceOf(_sender));
     }
    
 

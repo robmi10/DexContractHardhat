@@ -8,7 +8,7 @@ contract Dex {
     event userAddress (address indexed _useraddress);
     event createPoolEvent (address indexed _createBy, address indexed _token ,uint256 indexed _id);
     event liquidity (address indexed _from, uint256 indexed _lpTokenSupply, uint256 indexed _mintedAmount, uint256 _ethBalance, uint256 _lpTokenBalance, uint256 _amount);
-    event liquidityRemove (address indexed _from, uint256 indexed _ldSupply, uint256 indexed _tokenBack, uint256 _ethBack, uint256 _lpTokenBalance, uint256 _amount );
+    event liquidityRemove (address indexed _from, uint256 indexed _lpTokenSupply, uint256 indexed _mintedAmount, uint256 _ethBalance, uint256 _lpTokenBalance, uint256 _amount );
     event test (uint256 indexed _first, uint256 indexed _second);
     mapping (uint256 => Pool) public PoolMapping;
     mapping (uint256 => address) public PoolMappingAddress;
@@ -37,8 +37,8 @@ contract Dex {
 
     function _removeLiquidity(uint256 _pool, uint256 _amount) public payable{
         pool = Pool(payable(address(PoolMapping[_pool]))); 
-        (address from, uint256 lpTotalSupply, uint256 lptokenReturned, uint256 ethReturned, uint256 lpTokenBalance) = pool.removeLiquidity(_amount, msg.sender);
-        emit liquidityRemove(from, lpTotalSupply, lptokenReturned, ethReturned, lpTokenBalance, _amount);
+        (address from, uint256 lpTotalSupply, uint256 _estimatedAmount, uint256 _ethReserve,  uint256 lpTokenBalance) = pool.removeLiquidity(_amount, msg.sender);
+        emit liquidityRemove(from, lpTotalSupply, _estimatedAmount, _ethReserve, lpTokenBalance, _amount);
     }
 
     function _swapTokenToEth(uint256 _pool, uint256 _amount, uint256 _estimatedAmount)  public payable{
