@@ -34,38 +34,35 @@ contract Pool is IERC20, LIToken {
         uint256 balaceGet = IERC20(erc20TokenAddress).balanceOf(address(this));
         return balaceGet;
     }
-
-    function addLiquidity (uint _amount, address _sender) public payable returns (address, uint256, uint256, uint256, uint256) {
+ 
+    function addLiquidity (uint _amount, address _sender) public payable returns (address, uint256, uint256, uint256, address, uint256) {
         uint256 daiReserve = getReserve();
         uint256 _ethReserve = address(this).balance - msg.value;
         if(daiReserve == 0){
             lpToken.mint(_sender, _amount);
             IERC20(erc20TokenAddress).transferFrom(_sender, address(this), _amount);
-
-           return (_sender, lpToken._totalSupply(), daiReserve, _ethReserve, lpToken._balanceOf(_sender));
+    
+           return (_sender, lpToken._totalSupply(), daiReserve, address(this).balance, address(lpToken), lpToken._balanceOf(_sender));
         }else{
-        uint256 acceptedLiquidityAmount = (msg.value * daiReserve) / (_ethReserve);
-        require(_amount >= acceptedLiquidityAmount, "not accepted liquidity less then the minimum amount accepted");
-        /*IERC20(erc20TokenAddress).approve(address(this), acceptedLiquidityAmount);*/
-        IERC20(erc20TokenAddress).transferFrom(_sender, address(this), acceptedLiquidityAmount);
-        uint256 mintokens = (lpToken._totalSupply() * msg.value) / (_ethReserve);
-        lpToken.mint(_sender, mintokens);    
-        emit balancesCheck(_sender, _amount, acceptedLiquidityAmount, _ethReserve, msg.value);
 
-        return (_sender, lpToken._totalSupply(), mintokens, _ethReserve, lpToken._balanceOf(_sender));
+        require(_amount >= (msg.value * daiReserve) / (_ethReserve), "not accepted liquidity less then the minimum amount accepted");
+        /*IERC20(erc20TokenAddress).approve(address(this), acceptedLiquidityAmount);*/
+        IERC20(erc20TokenAddress).transferFrom(_sender, address(this), (msg.value * daiReserve) / (_ethReserve));
+      
+        lpToken.mint(_sender, (lpToken._totalSupply() * msg.value) / (_ethReserve));    
+        // emit balancesCheck(_sender, _amount, acceptedLiquidityAmount, _ethReserve, msg.value);
+    
+        return (_sender, lpToken._totalSupply(), (lpToken._totalSupply() * msg.value) / (_ethReserve), address(this).balance, address(lpToken), lpToken._balanceOf(_sender));
         }
-       
     }
     // remove liquidity
-    function removeLiquidity(uint _amount, address _sender) public payable returns (address, uint256, uint256, uint256, uint256) {
-        require(_amount >= 0, "to little amount");  
-        uint256 tokenBalance = lpToken._balanceOf(_sender);
+    function removeLiquidity(uint _amount, address _sender) public payable returns (address, uint256, uint256, uint256, address, uint256) {
+        require(_amount >= 0, "little amount");  
         lpToken.burn(_sender, _amount);
         IERC20(erc20TokenAddress).approve(address(this), (IERC20(erc20TokenAddress).balanceOf(address(this)) * _amount) / lpToken._totalSupply());
         IERC20(erc20TokenAddress).transferFrom(address(this), _sender, (IERC20(erc20TokenAddress).balanceOf(address(this)) * _amount) / lpToken._totalSupply());
-        uint256 ethBack = address(this).balance * _amount / lpToken._totalSupply();
-        (bool call, bytes memory data) = _sender.call{value: ethBack}("");
-        return (_sender, lpToken._totalSupply(), _amount, address(this).balance, lpToken._balanceOf(_sender));
+        (bool call, bytes memory data) = _sender.call{value: address(this).balance * _amount / lpToken._totalSupply()}("");
+        return (_sender, lpToken._totalSupply(), _amount, address(this).balance, address(lpToken),  lpToken._balanceOf(_sender));
     }
    
 

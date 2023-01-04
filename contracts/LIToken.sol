@@ -26,4 +26,9 @@ contract LIToken is ERC20{
     function _balanceOf(address _from) public view returns(uint256){
          return balanceOf(_from);
     }
+
+    function _getAddresLp() public view returns(address){
+         return address(this);
+    }
+
 }
