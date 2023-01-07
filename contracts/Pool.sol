@@ -34,25 +34,40 @@ contract Pool is IERC20, LIToken {
         uint256 balaceGet = IERC20(erc20TokenAddress).balanceOf(address(this));
         return balaceGet;
     }
- 
-    function addLiquidity (uint _amount, address _sender) public payable returns (address, uint256, uint256, uint256, address, uint256, uint256) {
-        uint256 _ethReserve = address(this).balance - msg.value;
-        if(getReserve() == 0){
-            lpToken.mint(_sender, _amount);
-            IERC20(erc20TokenAddress).transferFrom(_sender, address(this), _amount);
-            return (_sender, lpToken._totalSupply(), getReserve(), address(this).balance, address(lpToken), lpToken._balanceOf(_sender), getReserve());
-        }else{
 
-        require(_amount >= (msg.value * getReserve()) / (_ethReserve), "not accepted liquidity less then the minimum amount accepted");
-        /*IERC20(erc20TokenAddress).approve(address(this), acceptedLiquidityAmount);*/
-        IERC20(erc20TokenAddress).transferFrom(_sender, address(this), (msg.value * getReserve()) / (_ethReserve));
-      
-        lpToken.mint(_sender, (lpToken._totalSupply() * msg.value) / (_ethReserve));    
-        // emit balancesCheck(_sender, _amount, acceptedLiquidityAmount, _ethReserve, msg.value);
-    
-        return (_sender, lpToken._totalSupply(), (lpToken._totalSupply() * msg.value) / (_ethReserve), address(this).balance, address(lpToken), lpToken._balanceOf(_sender), getReserve());
-        }
+     function getEthReserve() public payable returns(uint256) {
+        return address(this).balance;
     }
+
+     function getinputAmountFee(uint256 _amount) public payable returns(uint256) {
+        uint256 inputAmountFee = _amount * 99;
+        return inputAmountFee;
+    }
+
+    function getfullEthReserve() public payable returns(uint256) {
+        uint256 fullEthReserve = getEthReserve() * 100;
+        return fullEthReserve;
+       
+    }
+
+function addLiquidity (uint _amount, address _sender) public payable returns (address, uint256, uint256, uint256, address, uint256, uint256) {
+    uint256 _ethReserve = address(this).balance - msg.value;
+    if(getReserve() == 0){
+        lpToken.mint(_sender, _amount);
+        IERC20(erc20TokenAddress).transferFrom(_sender, address(this), _amount);
+        return (_sender, lpToken._totalSupply(), getReserve(), address(this).balance, address(lpToken), lpToken._balanceOf(_sender), getReserve());
+    }else{
+
+    require(_amount >= (msg.value * getReserve()) / (_ethReserve), "not accepted liquidity less then the minimum amount accepted");
+    /*IERC20(erc20TokenAddress).approve(address(this), acceptedLiquidityAmount);*/
+    IERC20(erc20TokenAddress).transferFrom(_sender, address(this), (msg.value * getReserve()) / (_ethReserve));
+    
+    lpToken.mint(_sender, (lpToken._totalSupply() * msg.value) / (_ethReserve));    
+    // emit balancesCheck(_sender, _amount, acceptedLiquidityAmount, _ethReserve, msg.value);
+
+    return (_sender, lpToken._totalSupply(), (lpToken._totalSupply() * msg.value) / (_ethReserve), address(this).balance, address(lpToken), lpToken._balanceOf(_sender), getReserve());
+    }
+}
     // remove liquidity
     function removeLiquidity(uint _amount, address _sender) public payable returns (address, uint256, uint256, uint256, address, uint256, uint256) {
         require(_amount >= 0, "small amount");  
@@ -62,18 +77,18 @@ contract Pool is IERC20, LIToken {
         _sender.call{value: address(this).balance * _amount / lpToken._totalSupply()}("");
         return (_sender, lpToken._totalSupply(), _amount, address(this).balance, address(lpToken),  lpToken._balanceOf(_sender), getReserve());
     }
-   
+
     function getSwapAmountEth(uint256 _amount) public payable returns (uint256){
         uint256 erc20Reserve = getReserve();
         uint256 ethReserve = address(this).balance - _amount;
         uint256 inputAmountFee = _amount * 99;
         uint256 fullEthReserve = ethReserve * 100;
-
         require(ethReserve > 0 && erc20Reserve > 0, "invalide reserve amount");
         uint256 outputAmount = (inputAmountFee * erc20Reserve) / (_amount + fullEthReserve);
         emit balanceCall(_amount, outputAmount);
         return outputAmount;
     }
+
 
     function getSwapAmountDai(uint256 _amount) public returns (uint256){
         uint256 erc20Reserve = getReserve();
@@ -82,12 +97,37 @@ contract Pool is IERC20, LIToken {
         uint256 fullErc20Reserve = erc20Reserve * 100;
         require(erc20Reserve > 0 && ethReserve > 0, "invalide reserve amount");
         uint256 outputAmount = (inputAmountFee * ethReserve) / (_amount + fullErc20Reserve);
+
+
+        // uint256 erc20Reserve = getReserve();
+        // uint256 ethReserve = address(this).balance - msg.value;
+        // uint256 inputAmountFee = msg.value * 99;
+        // uint256 fullEthReserve = ethReserve * 100;
+        // require(ethReserve > 0 && erc20Reserve > 0, "invalide reserve amount");
+        // uint256 outputAmount = (inputAmountFee * erc20Reserve) / (msg.value + fullEthReserve);
+
+
+
         //emit balancesCheck (ethReserve, erc20Reserve ,inputAmountFee, outputAmount);
         emit balanceCall(outputAmount, fullErc20Reserve);
         return outputAmount;
     }
 
-    function swapEthToToken(uint256 _amount, address _sender) public payable{
+
+    function getSwapAmountEthSecond(uint256 _amount) public payable returns (uint256, uint256){
+        uint256 erc20Reserve = getReserve();
+        uint256 ethReserve = address(this).balance - _amount;
+        uint256 inputAmountFee = _amount * 99;
+        uint256 fullEthReserve = ethReserve * 100;
+
+        require(ethReserve > 0 && erc20Reserve > 0, "invalide reserve amount");
+        uint256 outputAmount = (inputAmountFee * erc20Reserve) / (_amount + fullEthReserve);
+        // require(outputAmount >= _amount, "to little toEth for swapping");
+        emit balanceCall(_amount, outputAmount);
+        return (outputAmount, _amount);
+    }
+
+    function swapEthToToken(uint256 _amount, uint256 _estimateamount, address _sender) public payable{
         uint256 erc20Reserve = getReserve();
         uint256 ethReserve = address(this).balance - msg.value;
         uint256 inputAmountFee = msg.value * 99;
@@ -95,26 +135,30 @@ contract Pool is IERC20, LIToken {
         require(ethReserve > 0 && erc20Reserve > 0, "invalide reserve amount");
         uint256 outputAmount = (inputAmountFee * erc20Reserve) / (msg.value + fullEthReserve);
         //uint256 totalAmountwithfee = (outputAmount * 99) / 100;
-        require(outputAmount >= _amount, "to little amount for swapping");
-        IERC20(erc20TokenAddress).approve(address(this), outputAmount);
-        IERC20(erc20TokenAddress).transferFrom(address(this), _sender, outputAmount);
-        emit tokenSwap(erc20TokenAddress, _sender, "eth/token", outputAmount);
+        // require(outputAmount >= _amount, "to little amount for swapEthToToken");
+        IERC20(erc20TokenAddress).approve(address(this), _estimateamount);
+        IERC20(erc20TokenAddress).transferFrom(address(this), _sender, _estimateamount);
+        emit tokenSwap(erc20TokenAddress, _sender, "eth/token", _amount);
     }
-
+ 
     function swapTokenToEth(uint256 _amount, uint256 _ethBackToUser ,address _sender) public payable{
         uint256 erc20Reserve = getReserve();
         uint256 ethReserve = address(this).balance;
-        uint256 inputAmountFee = _amount * 99;
+        uint256 inputAmountFee = msg.value * 99;
         uint256 fullErc20Reserve = erc20Reserve * 100;
         require(erc20Reserve > 0 && ethReserve > 0, "invalide reserve amount");
-        uint256 outputAmount = (inputAmountFee * ethReserve) / (_amount + fullErc20Reserve);
+        uint256 outputAmount = (inputAmountFee * ethReserve) / (msg.value + fullErc20Reserve);
         //uint256 totalAmountwithfee = (outputAmount * 99) / 100;
         require(outputAmount >= _ethBackToUser, "to little amount for swapping");
-        IERC20(erc20TokenAddress).approve(_sender, outputAmount);
-        IERC20(erc20TokenAddress).transferFrom(_sender, address(this), outputAmount);
-        (bool call, bytes memory data) = _sender.call{value: outputAmount}("");
+        IERC20(erc20TokenAddress).approve(_sender, msg.value);
+        IERC20(erc20TokenAddress).transferFrom(_sender, address(this), msg.value);
+        (bool call, bytes memory data) = _sender.call{value: _ethBackToUser}("");
         //emit transferSwap(outputAmount, data, call);
         emit tokenSwap(erc20TokenAddress, _sender, "token/eth", outputAmount);
         emit balancesCheck (_sender, ethReserve, fullErc20Reserve ,inputAmountFee, outputAmount);
     }
+
+
+    
 }
+

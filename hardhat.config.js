@@ -42,7 +42,7 @@ module.exports = {
       chainId: 1337,
       allowUnlimitedContractSize: true,
       accounts: [
-        "0x9ebab9311d5ba5fbb3d4216e11e4f4b08601bfaece8cfca16e7ee914ca4247ce",
+        "0x5fe005a0705806fd199215be2118a0e82c36dd8cb0798727165f317f221ddea4",
       ],
       //9ebab9311d5ba5fbb3d4216e11e4f4b08601bfaece8cfca16e7ee914ca4247ce
     },
