@@ -50,6 +50,12 @@ contract Pool is IERC20, LIToken {
        
     }
 
+     function getLiquidityStatus(uint _amount) public payable returns(uint256, uint256) {
+         uint256 _ethReserve = address(this).balance - _amount;
+        uint256 amountStatus = (_amount * getReserve()) / (_ethReserve);
+        return (amountStatus, _amount);   
+    }
+
 function addLiquidity (uint _amount, address _sender) public payable returns (address, uint256, uint256, uint256, address, uint256, uint256) {
     uint256 _ethReserve = address(this).balance - msg.value;
     if(getReserve() == 0){

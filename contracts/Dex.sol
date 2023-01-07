@@ -62,7 +62,6 @@ contract Dex {
         return swapamount;
     }
 
-
     function _getSwapAmountEth(uint256 _pool, uint256 _amount)  public  returns (uint256){
         pool = Pool(payable(address(PoolMapping[_pool])));
         (uint256 swapamount) = pool.getSwapAmountEth(_amount);
@@ -73,6 +72,13 @@ contract Dex {
      function _getAmount(uint256 _pool, uint256 _amount)  public  returns (uint256, uint256){
         pool = Pool(payable(address(PoolMapping[_pool])));
         (uint256 calcAmount, uint256 amountCheck) = pool.getSwapAmountEthSecond(_amount);
+        emit getSwapAmount(amountCheck);
+        return (calcAmount, amountCheck);
+    }
+
+     function _getLiquidityStatus(uint256 _pool, uint256 _amount)  public  returns (uint256, uint256){
+        pool = Pool(payable(address(PoolMapping[_pool])));
+        (uint256 calcAmount, uint256 amountCheck) = pool.getLiquidityStatus(_amount);
         emit getSwapAmount(amountCheck);
         return (calcAmount, amountCheck);
     }
