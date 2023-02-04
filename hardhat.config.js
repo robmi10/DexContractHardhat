@@ -30,7 +30,6 @@ module.exports = {
   networks: {
     hardhat: {
       chainId: 31337,
-      // allowUnlimitedContractSize: true,
     },
     localhost: {
       chainId: 31337,
@@ -42,9 +41,8 @@ module.exports = {
       chainId: 1337,
       allowUnlimitedContractSize: true,
       accounts: [
-        "0xd3f2d7afc8d315b02676eea488c8441b04de17c3cf0b7ce95f7066b6e9b5716a",
+        "0xdf7b327a71f8282bcdee3f2c8cc05859c229a8e2042485a8bc1c8bb637f17073",
       ],
-      //9ebab9311d5ba5fbb3d4216e11e4f4b08601bfaece8cfca16e7ee914ca4247ce
     },
   },
 };
