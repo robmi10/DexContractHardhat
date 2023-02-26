@@ -36,6 +36,12 @@ module.exports = {
       allowUnlimitedContractSize: true,
     },
 
+    polygon: {
+      url: process.env.API_URL,
+      accounts: [`0x${process.env.PRIVATE_KEY}`],
+      allowUnlimitedContractSize: true,
+    },
+
     ganache: {
       url: "HTTP://127.0.0.1:7545",
       chainId: 1337,
